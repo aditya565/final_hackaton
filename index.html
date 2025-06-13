@@ -1,0 +1,565 @@
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Eduventures - Gamified Learning</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 900px;
+    margin: 1rem auto;
+    background: #f2f6ff;
+    color: #333;
+    user-select: none;
+  }
+  h1.popUp {
+    animation: popUp 1s ease forwards;
+    text-align: center;
+    color: #4a90e2;
+  }
+  @keyframes popUp {
+    0% { opacity: 0; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  .course-list, .lesson-list, .quiz-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+  .course-card, .lesson-card, .quiz-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    width: 260px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  .course-card:hover, .lesson-card:hover, .quiz-card:hover {
+    transform: scale(1.05);
+  }
+  .course-card img, .lesson-card img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+  }
+  .lesson-card button, .quiz-card button, .back-button, .certificate-button {
+    margin-top: 0.5rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1rem;
+  }
+  .lesson-card button:disabled, .quiz-card button:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+  }
+  .back-button {
+    margin: 1rem 0;
+    padding: 8px 15px;
+    border: none;
+    background: #007bff;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    width: auto;
+  }
+  .xp-info {
+    margin-top: 20px;
+    text-align: center;
+  }
+  .certificate-button {
+    margin-top: 15px;
+    background-color: #ff7f50;
+    cursor: pointer;
+  }
+  img.lesson-image {
+    max-width: 100%;
+    margin-top: 0.5rem;
+    border-radius: 6px;
+  }
+  .quiz-option-btn {
+    margin: 5px 5px 5px 0;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #28a745;
+    background-color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .quiz-option-btn:hover {
+    background-color: #28a745;
+    color: white;
+  }
+  .quiz-option-btn.correct {
+    background-color: #28a745;
+    color: white;
+    border-color: #1e7e34;
+  }
+  .quiz-option-btn.incorrect {
+    background-color: #dc3545;
+    color: white;
+    border-color: #a71d2a;
+  }
+  .quiz-question {
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+<body>
+
+<h1 class="popUp">Eduventures - Gamified Learning</h1>
+
+<div id="app"></div>
+
+<button id="reset-progress-btn">Reset Progress</button>
+
+<script>
+// Course, Lessons and Quizzes data with more lessons and dedicated quizzes per course
+const courses = [
+  {
+    id: 1,
+    title: "HTML Basics",
+    description: "Learn the basics of HTML5 to build simple webpages.",
+    image: "https://cdn.dribbble.com/users/1622793/screenshots/4239816/media/7ac67c9d33f7a5945cfe4c3c5e5f3b35.png",
+    lessons: [
+      {
+        id: 101,
+        title: "Introduction to HTML",
+        content: `
+          <p>HTML stands for HyperText Markup Language. It is the standard markup language for creating Web pages.</p>
+          <img class='lesson-image' src='https://media.geeksforgeeks.org/wp-content/cdn-uploads/20190702134345/HTML.png' alt='HTML Logo' />`,
+        xp: 10
+      },
+      {
+        id: 102,
+        title: "HTML Tags",
+        content: `<p>Tags are the building blocks of HTML. Tags are enclosed in angle brackets &lt;&gt;.</p>
+                  <p>Examples: &lt;html&gt;, &lt;head&gt;, &lt;body&gt;, &lt;h1&gt; to &lt;h6&gt;, &lt;p&gt; etc.</p>`,
+        xp: 15
+      },
+      {
+        id: 103,
+        title: "HTML Elements and Attributes",
+        content: `<p>Elements are the components of an HTML document and attributes provide additional info.</p>
+                  <p>Example: &lt;a href="url"&gt;Link&lt;/a&gt; — 'href' is an attribute.</p>`,
+        xp: 15
+      },
+      {
+        id: 104,
+        title: "HTML Lists and Images",
+        content: `<p>HTML supports ordered &lt;ol&gt;, unordered &lt;ul&gt; lists, and images with &lt;img&gt; tag.</p>
+                  <img class='lesson-image' src='https://www.w3schools.com/html/img_lists.gif' alt='HTML lists' />`,
+        xp: 15
+      }
+    ],
+    quizzes: [
+      {
+        id: 1001,
+        question: "Which tag is used for the largest heading?",
+        options: ["<h6>", "<h1>", "<heading>", "<head>"],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 1002,
+        question: "Which attribute is used to link a page to another URL?",
+        options: ["src", "href", "link", "ref"],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 1003,
+        question: "Which tag inserts an image in HTML?",
+        options: ["&lt;img&gt;", "&lt;image&gt;", "&lt;picture&gt;", "&lt;src&gt;"],
+        correctAnswerIndex: 0
+      }
+    ]
+  },
+  {
+    id: 2,
+    title: "CSS Fundamentals",
+    description: "Style your webpages using CSS.",
+    image: "https://cdn.dribbble.com/users/662703/screenshots/1667860/css_animation.gif",
+    lessons: [
+      {
+        id: 201,
+        title: "CSS Syntax",
+        content: `<p>CSS stands for Cascading Style Sheets and is used to style HTML elements.</p>
+                  <img class='lesson-image' src='https://cdn.tutsplus.com/net/uploads/legacy/772_css_intro/css_syntax.gif' alt='CSS Syntax' />`,
+        xp: 12
+      },
+      {
+        id: 202,
+        title: "CSS Selectors",
+        content: `<p>Selectors specify which elements the style applies to.</p>
+                  <p>Examples: element selectors, class selectors, id selectors.</p>`,
+        xp: 18
+      },
+      {
+        id: 203,
+        title: "CSS Box Model",
+        content: `<p>The box model describes the rectangular boxes generated for elements.</p>
+                  <img class='lesson-image' src='https://www.w3schools.com/css/boxmodel.gif' alt='CSS Box Model' />`,
+        xp: 15
+      },
+      {
+        id: 204,
+        title: "CSS Flexbox Basics",
+        content: `<p>Flexbox is a layout mode for arranging items in rows or columns efficiently.</p>`,
+        xp: 20
+      }
+    ],
+    quizzes: [
+      {
+        id: 2001,
+        question: "Which selector selects all paragraphs?",
+        options: ["p", ".p", "#p", "*p"],
+        correctAnswerIndex: 0
+      },
+      {
+        id: 2002,
+        question: "Which property controls the text size?",
+        options: ["font-style", "text-size", "font-size", "text-style"],
+        correctAnswerIndex: 2
+      },
+      {
+        id: 2003,
+        question: "What does 'padding' control in CSS box model?",
+        options: ["Space between border and content", "Space outside border", "Border thickness", "Content size"],
+        correctAnswerIndex: 0
+      }
+    ]
+  },
+  {
+    id: 3,
+    title: "Python Programming",
+    description: "Begin your journey into Python programming.",
+    image: "https://media.geeksforgeeks.org/wp-content/cdn-uploads/20221129130814/Untitled-Diagram-57.png",
+    lessons: [
+      {
+        id: 301,
+        title: "Python Syntax",
+        content: `<p>Python uses indentation instead of braces to define code blocks.</p>
+                  <img class='lesson-image' src='https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg' alt='Python Logo' />`,
+        xp: 20
+      },
+      {
+        id: 302,
+        title: "Variables in Python",
+        content: `<p>Variables store data values and do not need explicit declaration.</p>`,
+        xp: 25
+      },
+      {
+        id: 303,
+        title: "Data Types",
+        content: `<p>Common data types: int, float, string, bool, list, tuple, dictionary.</p>`,
+        xp: 20
+      },
+      {
+        id: 304,
+        title: "Control Flow - if/else",
+        content: `<p>Conditional statements let you execute code based on conditions.</p>`,
+        xp: 25
+      }
+    ],
+    quizzes: [
+      {
+        id: 3001,
+        question: "Which of the following is a valid variable name in Python?",
+        options: ["1variable", "variable_1", "variable-1", "variable 1"],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 3002,
+        question: "What is the output of: print(2 ** 3)?",
+        options: ["6", "8", "9", "5"],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 3003,
+        question: "Which keyword is used for a conditional statement?",
+        options: ["for", "while", "if", "def"],
+        correctAnswerIndex: 2
+      }
+    ]
+  }
+];
+
+// Load progress or initialize
+let progress = JSON.parse(localStorage.getItem('eduventuresProgress')) || {
+  xp: 0,
+  completedLessons: [],
+  completedCourses: [],
+  quizResults: {} // store quiz results per course (id: score)
+};
+
+const appDiv = document.getElementById('app');
+
+function saveProgress() {
+  localStorage.setItem('eduventuresProgress', JSON.stringify(progress));
+}
+
+function renderXPInfo() {
+  let xpDiv = document.getElementById('xp-info');
+  if (!xpDiv) {
+    xpDiv = document.createElement('div');
+    xpDiv.id = 'xp-info';
+    xpDiv.className = 'xp-info';
+    appDiv.appendChild(xpDiv);
+  }
+  const level = Math.floor(progress.xp / 50) + 1;
+  xpDiv.innerHTML = `<strong>Total XP:</strong> ${progress.xp} &nbsp; | &nbsp; <strong>Level:</strong> ${level}`;
+}
+
+// Render list of courses
+function renderCourseList() {
+  appDiv.innerHTML = '';
+  const courseListDiv = document.createElement('div');
+  courseListDiv.className = 'course-list';
+
+  courses.forEach(course => {
+    const card = document.createElement('div');
+    card.className = 'course-card';
+
+    card.innerHTML = `
+      <img src="${course.image}" alt="${course.title}" />
+      <h2>${course.title}</h2>
+      <p>${course.description}</p>
+    `;
+
+    card.addEventListener('click', () => renderCourseDetails(course));
+    courseListDiv.appendChild(card);
+  });
+
+  appDiv.appendChild(courseListDiv);
+  renderXPInfo();
+}
+
+// Render lessons of a course
+function renderCourseDetails(course) {
+  appDiv.innerHTML = '';
+
+  const backBtn = document.createElement('button');
+  backBtn.textContent = '← Back to Courses';
+  backBtn.className = 'back-button';
+  backBtn.onclick = renderCourseList;
+  appDiv.appendChild(backBtn);
+
+  const title = document.createElement('h2');
+  title.textContent = course.title;
+  appDiv.appendChild(title);
+
+  // Lessons container
+  const lessonList = document.createElement('div');
+  lessonList.className = 'lesson-list';
+
+  course.lessons.forEach(lesson => {
+    const lessonCard = document.createElement('div');
+    lessonCard.className = 'lesson-card';
+
+    const isCompleted = progress.completedLessons.includes(lesson.id);
+
+    lessonCard.innerHTML = `
+      <h3>${lesson.title}</h3>
+      <div>${lesson.content || ''}</div>
+    `;
+
+    const btn = document.createElement('button');
+    btn.textContent = isCompleted ? 'Completed' : `Complete & Earn ${lesson.xp} XP`;
+    btn.disabled = isCompleted;
+
+    btn.onclick = () => {
+      if (!progress.completedLessons.includes(lesson.id)) {
+        progress.completedLessons.push(lesson.id);
+        progress.xp += lesson.xp;
+        saveProgress();
+        alert(`You earned ${lesson.xp} XP! Total XP: ${progress.xp}`);
+        renderCourseDetails(course);
+      }
+    };
+
+    lessonCard.appendChild(btn);
+
+    lessonList.appendChild(lessonCard);
+  });
+
+  appDiv.appendChild(lessonList);
+
+  // After lessons, show quiz button if lessons complete
+  const allLessonsCompleted = course.lessons.every(lesson => progress.completedLessons.includes(lesson.id));
+  if (allLessonsCompleted) {
+    const quizBtn = document.createElement('button');
+    quizBtn.textContent = 'Take Course Quiz';
+    quizBtn.className = 'certificate-button';
+    quizBtn.onclick = () => renderQuiz(course);
+    appDiv.appendChild(quizBtn);
+  }
+
+  // If course fully completed and quiz passed, show certificate button
+  const quizScore = progress.quizResults[course.id] || 0;
+  if (quizScore >= Math.floor(course.quizzes.length * 0.7)) {
+    if (!progress.completedCourses.includes(course.id)) {
+      progress.completedCourses.push(course.id);
+      saveProgress();
+      alert(`🎉 You passed the quiz and completed the ${course.title} course!`);
+    }
+    const certBtn = document.createElement('button');
+    certBtn.className = 'certificate-button';
+    certBtn.textContent = 'Download Certificate';
+    certBtn.onclick = () => downloadCertificate(course);
+    appDiv.appendChild(certBtn);
+  }
+
+  renderXPInfo();
+}
+
+// Render quiz section for a course
+function renderQuiz(course) {
+  appDiv.innerHTML = '';
+
+  const backBtn = document.createElement('button');
+  backBtn.textContent = '← Back to Course Lessons';
+  backBtn.className = 'back-button';
+  backBtn.onclick = () => renderCourseDetails(course);
+  appDiv.appendChild(backBtn);
+
+  const title = document.createElement('h2');
+  title.textContent = `${course.title} - Quiz`;
+  appDiv.appendChild(title);
+
+  const quizListDiv = document.createElement('div');
+  quizListDiv.className = 'quiz-list';
+
+  let currentQuestionIndex = 0;
+  let correctAnswersCount = 0;
+
+  function showQuestion(index) {
+    quizListDiv.innerHTML = '';
+    const quiz = course.quizzes[index];
+
+    const questionCard = document.createElement('div');
+    questionCard.className = 'quiz-card';
+
+    const questionText = document.createElement('div');
+    questionText.className = 'quiz-question';
+    questionText.textContent = `Q${index + 1}. ${quiz.question}`;
+    questionCard.appendChild(questionText);
+
+    quiz.options.forEach((opt, i) => {
+      const optBtn = document.createElement('button');
+      optBtn.className = 'quiz-option-btn';
+      optBtn.textContent = opt;
+
+      optBtn.onclick = () => {
+        if (i === quiz.correctAnswerIndex) {
+          optBtn.classList.add('correct');
+          correctAnswersCount++;
+          setTimeout(() => nextQuestion(), 700);
+        } else {
+          optBtn.classList.add('incorrect');
+          alert('❌ Wrong answer. Try again!');
+        }
+      };
+
+      questionCard.appendChild(optBtn);
+    });
+
+    quizListDiv.appendChild(questionCard);
+  }
+
+  function nextQuestion() {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < course.quizzes.length) {
+      showQuestion(currentQuestionIndex);
+    } else {
+      finishQuiz();
+    }
+  }
+
+  function finishQuiz() {
+    quizListDiv.innerHTML = '';
+    const resultDiv = document.createElement('div');
+    resultDiv.style.textAlign = 'center';
+    const total = course.quizzes.length;
+    resultDiv.innerHTML = `
+      <h3>Quiz Completed!</h3>
+      <p>Your score: ${correctAnswersCount} / ${total}</p>
+    `;
+
+    // Save quiz results
+    progress.quizResults[course.id] = correctAnswersCount;
+    saveProgress();
+
+    if (correctAnswersCount >= Math.floor(total * 0.7)) {
+      const congrats = document.createElement('p');
+      congrats.style.color = 'green';
+      congrats.textContent = '🎉 Congratulations! You passed the quiz.';
+      resultDiv.appendChild(congrats);
+
+      const backToCourseBtn = document.createElement('button');
+      backToCourseBtn.textContent = 'Back to Course';
+      backToCourseBtn.className = 'certificate-button';
+      backToCourseBtn.onclick = () => renderCourseDetails(course);
+      resultDiv.appendChild(backToCourseBtn);
+    } else {
+      const retryBtn = document.createElement('button');
+      retryBtn.textContent = 'Try Quiz Again';
+      retryBtn.className = 'certificate-button';
+      retryBtn.onclick = () => {
+        currentQuestionIndex = 0;
+        correctAnswersCount = 0;
+        showQuestion(currentQuestionIndex);
+      };
+      resultDiv.appendChild(retryBtn);
+
+      const backBtn = document.createElement('button');
+      backBtn.textContent = 'Back to Course Lessons';
+      backBtn.className = 'back-button';
+      backBtn.onclick = () => renderCourseDetails(course);
+      resultDiv.appendChild(backBtn);
+    }
+
+    quizListDiv.appendChild(resultDiv);
+  }
+
+  appDiv.appendChild(quizListDiv);
+  showQuestion(currentQuestionIndex);
+}
+
+// Generate a simple certificate as text file
+function downloadCertificate(course) {
+  const level = Math.floor(progress.xp / 50) + 1;
+  const text = `Certificate of Completion\n\nThis certifies that the learner has successfully completed the course "${course.title}".\n\nTotal XP earned: ${progress.xp}\nCurrent Level: ${level}\n\nCongratulations!\n\nEduventures`;
+  const blob = new Blob([text], { type: 'text/plain' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `Certificate_${course.title.replace(/\s+/g, '_')}.txt`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+// Initial load
+renderCourseList();
+
+// Reset Progress button logic
+window.onload = () => {
+  const btn = document.getElementById('reset-progress-btn');
+  btn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to reset your progress?')) {
+      localStorage.removeItem('eduventuresProgress');  // clear saved progress
+      alert('Progress cleared! Reloading...');
+      location.reload();  // reload to reset UI
+    }
+  });
+};
+
+</script>
+!DOCTYPE html>
+</body>
+</html>
