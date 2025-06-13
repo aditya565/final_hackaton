@@ -1,18 +1,16 @@
 const mongoose = require('mongoose');
 
 const questionSchema = new mongoose.Schema({
-  questionText: String,
-  options: [String],
-  correctAnswer: Number // Index of correct option
+  questionText: { type: String, required: true },
+  options: [{ type: String, required: true }],
+  correctOptionIndex: { type: Number, required: true }
 });
 
 const quizSchema = new mongoose.Schema({
-  lessonId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Lesson',
-    required: true
-  },
+  title: { type: String, required: true },
+  description: String,
   questions: [questionSchema]
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Quiz', quizSchema);
+
