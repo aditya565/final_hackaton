@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Eduventures Neon</title>
+  <style>
+    body {
+      background: #18192b;
+      color: #fff;
+      font-family: 'Orbitron', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+    /* Login/Register Styles */
+    #login-overlay, #register-overlay {
+      position: fixed;
+      z-index: 3000;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: linear-gradient(135deg, #18192b 60%, #00ffd0 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      animation: fadeIn 0.8s;
+    }
+    #login-box, #register-box {
+      background: #18192b;
+      border: 2px solid #00ffd0;
+      border-radius: 18px;
+      box-shadow: 0 0 30px #00ffd033;
+      padding: 2.5rem 2.5rem 2rem 2.5rem;
+      text-align: center;
+      min-width: 320px;
+    }
+    #login-box h2, #register-box h2 {
+      color: #00ffd0;
+      margin-bottom: 1.3rem;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    #login-box input, #register-box input {
+      width: 80%;
+      padding: 0.7rem;
+      border-radius: 8px;
+      border: 1.5px solid #00ffd0;
+      margin-bottom: 1.1rem;
+      font-size: 1.1rem;
+      background: #23234d;
+      color: #00ffd0;
+      outline: none;
+      transition: border 0.2s;
+    }
+    #login-box input:focus, #register-box input:focus {
+      border: 2px solid #00ffd0;
+      background: #18192b;
+    }
+    #login-btn, #register-btn {
+      font-size: 1.1rem;
+      background: #00ffd0;
+      color: #18192b;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 35px;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 0 18px #00ffd055;
+      transition: background 0.2s, transform 0.2s;
+      margin-top: 0.5rem;
+    }
+    #login-btn:hover, #register-btn:hover {
+      background: #00aaff;
+      color: #fff;
+      transform: scale(1.04);
+    }
+    #login-error, #register-error {
+      color: #ff4c4c;
+      margin-top: 0.7rem;
+      font-size: 1rem;
+      display: none;
+    }
+    .switch-link {
+      color: #00ffd0;
+      cursor: pointer;
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 1rem;
+      text-decoration: underline;
+    }
+    /* Neon Enter Styles and App Styles (unchanged) */
+    #enter-overlay {
+      position: fixed;
+      z-index: 2000;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: linear-gradient(135deg, #18192b 60%, #00ffd0 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      animation: fadeIn 0.8s;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    #enter-overlay h1 {
+      color: #00ffd0;
+      font-size: 3rem;
+      margin-bottom: 2rem;
+      letter-spacing: 2px;
+      font-weight: 900;
+      text-shadow: 0 6px 32px #000a;
+    }
+    #enter-btn {
+      font-size: 1.5rem;
+      background: #00ffd0;
+      color: #18192b;
+      border: none;
+      border-radius: 12px;
+      padding: 18px 50px;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 0 30px #00ffd055;
+      animation: popUp 1s, pulse 2s infinite;
+      transition: background 0.2s, transform 0.2s;
+    }
+    #enter-btn:hover {
+      background: #00aaff;
+      color: #fff;
+      transform: scale(1.06);
+    }
+    @keyframes popUp { 0% { opacity: 0; transform: scale(0.8);} 100% { opacity: 1; transform: scale(1);} }
+    @keyframes pulse { 0% { box-shadow: 0 0 30px #00ffd055; } 50% { box-shadow: 0 0 60px #00ffd099; } 100% { box-shadow: 0 0 30px #00ffd055; } }
+    .quote {
+      font-size: 1.2rem;
+      color: #fff;
+      background: rgba(0,255,208,0.08);
+      border-left: 4px solid #00ffd0;
+      padding: 1rem 2rem;
+      margin-bottom: 2rem;
+      border-radius: 10px;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 0 20px #00ffd022;
+    }
+    .xp-info {
+      position: fixed;
+      top: 16px;
+      right: 32px;
+      background: #0a0a18;
+      color: #00ffd0;
+      padding: 10px 18px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px #00ffd033;
+      font-size: 1.1rem;
+      z-index: 1001;
+      min-width: 170px;
+      text-align: right;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border: 1px solid #00ffd0;
+      display: none;
+    }
+    h1.popUp {
+      animation: popUp 1s ease forwards;
+      text-align: center;
+      color: #00ffd0;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin-top: 32px;
+      margin-bottom: 24px;
+      font-size: 2.2rem;
+      display: none;
+    }
+    /* About/Contact Modal */
+    #about-modal {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.88);
+      align-items: center; justify-content: center;
+    }
+    #about-content {
+      background: #18192b;
+      color: #00ffd0;
+      border-radius: 16px;
+      padding: 32px 24px 24px 24px;
+      max-width: 520px;
+      margin: auto;
+      box-shadow: 0 8px 40px #00ffd033;
+      text-align: center;
+      position: relative;
+      border: 2px solid #00ffd0;
+    }
+    #close-about {
+      position: absolute;
+      top: 16px; right: 16px;
+      background: #00ffd0;
+      color: #18192b;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      padding: 4px 14px;
+      cursor: pointer;
+    }
+    #about-link {
+      position: fixed;
+      top: 20px; left: 32px;
+      background: #18192b;
+      color: #00ffd0;
+      border: 1.5px solid #00ffd0;
+      border-radius: 8px;
+      padding: 7px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      z-index: 1010;
+      transition: background 0.2s, color 0.2s;
+      display: none;
+    }
+    #about-link:hover {
+      background: #00ffd0;
+      color: #18192b;
+    }
+    .about-section {
+      margin-bottom: 1.8rem;
+      text-align: left;
+    }
+    .about-section h3 {
+      color: #00ffd0;
+      margin-bottom: 0.5rem;
+      margin-top: 1.2rem;
+      font-size: 1.1rem;
+    }
+    .about-section p, .about-section ul {
+      color: #fff;
+      font-size: 1rem;
+      margin: 0.3rem 0 0.8rem 0;
+    }
+    .about-section ul { padding-left: 1.2rem; }
+    /* App Styles */
+    .course-list, .lesson-list, .quiz-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .course-card, .lesson-card, .quiz-card {
+      background: #23234d;
+      color: #00ffd0;
+      padding: 1.5rem 1rem 1.2rem 1rem;
+      border-radius: 18px;
+      width: 270px;
+      box-shadow: 0 6px 20px 0 #00ffd022;
+      cursor: pointer;
+      transition: box-shadow 0.3s, transform 0.2s;
+      border: 1.5px solid #00ffd0;
+      position: relative;
+    }
+    .course-card:hover, .lesson-card:hover, .quiz-card:hover {
+      box-shadow: 0 12px 32px 0 #00ffd044;
+      transform: translateY(-4px) scale(1.03);
+      border: 1.5px solid #00ffd0;
+    }
+    .course-card .logo-circle {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #18192b;
+      border-radius: 50%;
+      margin: 0 auto 18px auto;
+      box-shadow: 0 2px 8px #00ffd022;
+      border: 2px solid #00ffd0;
+    }
+    .course-card img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+      background: transparent;
+      border-radius: 0;
+      margin: 0;
+      display: block;
+    }
+    .course-card h2 {
+      font-size: 1.25rem;
+      margin: 0 0 10px 0;
+      text-align: center;
+      color: #00ffd0;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .course-card p {
+      font-size: 1rem;
+      text-align: center;
+      color: #fff;
+      margin: 0;
+      min-height: 48px;
+    }
+    .lesson-card h3 {
+      font-size: 1.1rem;
+      margin: 0 0 8px 0;
+      color: #00ffd0;
+      font-weight: 600;
+    }
+    .lesson-card, .quiz-card {
+      background: #23234d;
+      color: #00ffd0;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px 0 #00ffd022;
+      border: 1px solid #00ffd0;
+      padding: 1.1rem 1rem 1rem 1rem;
+      width: 100%;
+      max-width: 370px;
+    }
+    .lesson-card img.lesson-image {
+      max-width: 100%;
+      margin-top: 0.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px #00ffd022;
+    }
+    .lesson-card button, .quiz-card button, .back-button, .certificate-button {
+      margin-top: 0.5rem;
+      background-color: #00ffd0;
+      color: #18192b;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: background 0.2s;
+    }
+    .lesson-card button:disabled, .quiz-card button:disabled {
+      background-color: #999;
+      color: #fff;
+      cursor: not-allowed;
+    }
+    .back-button {
+      margin: 1rem 0;
+      padding: 8px 15px;
+      background: #18192b;
+      color: #00ffd0;
+      border: 2px solid #00ffd0;
+      border-radius: 6px;
+      cursor: pointer;
+      width: auto;
+      font-weight: 600;
+      transition: background 0.2s, color 0.2s;
+    }
+    .back-button:hover {
+      background: #00ffd0;
+      color: #18192b;
+    }
+    .certificate-button {
+      margin-top: 15px;
+      background-color: #00ffd0;
+      color: #18192b;
+      cursor: pointer;
+    }
+    .quiz-option-btn {
+      margin: 5px 5px 5px 0;
+      padding: 5px 10px;
+      border-radius: 5px;
+      border: 1.5px solid #00ffd0;
+      background-color: #18192b;
+      color: #00ffd0;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+      font-weight: 600;
+    }
+    .quiz-option-btn:hover {
+      background-color: #00ffd0;
+      color: #18192b;
+    }
+    .quiz-option-btn.correct {
+      background-color: #28a745;
+      color: white;
+      border-color: #1e7e34;
+    }
+    .quiz-option-btn.incorrect {
+      background-color: #dc3545;
+      color: white;
+      border-color: #a71d2a;
+    }
+    .quiz-question {
+      margin-bottom: 10px;
+      color: #00ffd0;
+      font-weight: 600;
+      font-size: 1.08rem;
+    }
+    #reset-progress-btn {
+      display: none;
+      margin: 30px auto 0 auto;
+      background: #18192b;
+      color: #00ffd0;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 2px solid #00ffd0;
+      transition: background 0.2s, color 0.2s;
+      display: block;
+    }
+    #reset-progress-btn:hover {
+      background: #00ffd0;
+      color: #18192b;
+    }
+  </style>
+</head>
+<body>
+  <!-- LOGIN PAGE -->
+  <div id="login-overlay">
+    <form id="login-box" onsubmit="return false;">
+      <h2>Login to Eduventures</h2>
+      <input type="text" id="username" placeholder="Enter your username" autocomplete="off" required />
+      <br>
+      <input type="password" id="password" placeholder="Password" autocomplete="off" required />
+      <br>
+      <button id="login-btn">Login</button>
+      <div id="login-error">Please enter your username and password.</div>
+      <div class="switch-link" id="show-register">Don't have an account? Register</div>
+    </form>
+  </div>
+
+  <!-- REGISTER PAGE -->
+  <div id="register-overlay" style="display:none;">
+    <form id="register-box" onsubmit="return false;">
+      <h2>Register</h2>
+      <input type="text" id="reg-username" placeholder="Choose a username" autocomplete="off" required />
+      <br>
+      <input type="password" id="reg-password" placeholder="Create password" autocomplete="off" required />
+      <br>
+      <input type="password" id="reg-confirm" placeholder="Confirm password" autocomplete="off" required />
+      <br>
+      <button id="register-btn">Register</button>
+      <div id="register-error">All fields are required.</div>
+      <div class="switch-link" id="show-login">Already have an account? Login</div>
+    </form>
+  </div>
+
+  <!-- Neon Enter Overlay with Quotes -->
+  <div id="enter-overlay" style="display:none;">
+    <h1>Eduventures Neon</h1>
+    <div class="quote" id="quote-box">
+      "Talk is cheap. Show me the code." – Linus Torvalds
+    </div>
+    <button id="enter-btn">Enter</button>
+  </div>
+
+  <!-- About/Contact Modal -->
+  <div id="about-modal">
+    <div id="about-content">
+      <button id="close-about">Close</button>
+      <h2>About Us</h2>
+      <div class="about-section">
+        <p>
+          <strong>Eduventures Neon</strong> is a gamified learning platform built for hackathons and lifelong learners.<br>
+          <br>
+          <strong>Team:</strong> <br>
+          <ul>
+            <li><strong>Lead Developer:</strong> [Your Name]</li>
+            <li><strong>UI/UX Designer:</strong> [Teammate Name]</li>
+            <li><strong>Content Specialist:</strong> [Teammate Name]</li>
+          </ul>
+        </p>
+        <p>
+          Our mission: Make learning fun, interactive, and rewarding.<br>
+          Unlock new skills, earn XP, and collect certificates as you progress!
+        </p>
+        <ul>
+          <li>Gamified learning experience</li>
+          <li>Courses: HTML, CSS, Python, and more</li>
+          <li>Quizzes and instant feedback</li>
+          <li>Earn XP and level up</li>
+          <li>Downloadable e-certificates</li>
+        </ul>
+      </div>
+      <div class="about-section">
+        <h3>Contact Us</h3>
+        <p>
+          For feedback, queries, or collaboration:<br>
+          <strong>Email:</strong> <a href="mailto:eduventures.team@example.com" style="color:#00ffd0;">eduventures.team@example.com</a><br>
+          <strong>Phone:</strong> +91-9876543210
+        </p>
+      </div>
+    </div>
+  </div>
+  <button id="about-link">About Us</button>
+
+  <div id="xp-info" class="xp-info"></div>
+  <h1 class="popUp" id="main-title">Eduventures - Gamified Learning</h1>
+  <div id="app"></div>
+  <button id="reset-progress-btn">Reset Progress</button>
+
+  <script>
+    // --- Registration/Login Logic ---
+    let loggedInUser = "";
+    // Users stored as {username: password}
+    function getUsers() {
+      return JSON.parse(localStorage.getItem('eduventuresUsers') || '{}');
+    }
+    function setUsers(users) {
+      localStorage.setItem('eduventuresUsers', JSON.stringify(users));
+    }
+
+    // Switch between login/register
+    document.getElementById('show-register').onclick = function() {
+      document.getElementById('login-overlay').style.display = 'none';
+      document.getElementById('register-overlay').style.display = '';
+      document.getElementById('register-error').style.display = 'none';
+    };
+    document.getElementById('show-login').onclick = function() {
+      document.getElementById('register-overlay').style.display = 'none';
+      document.getElementById('login-overlay').style.display = '';
+      document.getElementById('login-error').style.display = 'none';
+    };
+
+    // Registration
+    document.getElementById('register-btn').onclick = function() {
+      const uname = document.getElementById('reg-username').value.trim();
+      const pwd = document.getElementById('reg-password').value;
+      const conf = document.getElementById('reg-confirm').value;
+      const users = getUsers();
+      if(!uname || !pwd || !conf) {
+        document.getElementById('register-error').textContent = "All fields are required.";
+        document.getElementById('register-error').style.display = 'block';
+        return false;
+      }
+      if(users[uname]) {
+        document.getElementById('register-error').textContent = "Username already exists.";
+        document.getElementById('register-error').style.display = 'block';
+        return false;
+      }
+      if(pwd !== conf) {
+        document.getElementById('register-error').textContent = "Passwords do not match.";
+        document.getElementById('register-error').style.display = 'block';
+        return false;
+      }
+      users[uname] = pwd;
+      setUsers(users);
+      document.getElementById('register-error').style.display = 'none';
+      alert("Registration successful! You can now log in.");
+      document.getElementById('register-overlay').style.display = 'none';
+      document.getElementById('login-overlay').style.display = '';
+      return false;
+    };
+
+    // Login
+    document.getElementById('login-btn').onclick = function() {
+      var uname = document.getElementById('username').value.trim();
+      var pwd = document.getElementById('password').value;
+      const users = getUsers();
+      if(!uname || !pwd) {
+        document.getElementById('login-error').textContent = "Please enter your username and password.";
+        document.getElementById('login-error').style.display = 'block';
+        return false;
+      }
+      if(!users[uname] || users[uname] !== pwd) {
+        document.getElementById('login-error').textContent = "Incorrect username or password.";
+        document.getElementById('login-error').style.display = 'block';
+        return false;
+      }
+      document.getElementById('login-error').style.display = 'none';
+      loggedInUser = uname;
+      document.getElementById('login-overlay').style.display = 'none';
+      document.getElementById('enter-overlay').style.display = '';
+      return false;
+    };
+    document.getElementById('username').addEventListener("keydown", function(e){
+      if(e.key === "Enter") document.getElementById('login-btn').click();
+    });
+    document.getElementById('password').addEventListener("keydown", function(e){
+      if(e.key === "Enter") document.getElementById('login-btn').click();
+    });
+    document.getElementById('reg-username').addEventListener("keydown", function(e){
+      if(e.key === "Enter") document.getElementById('register-btn').click();
+    });
+    document.getElementById('reg-password').addEventListener("keydown", function(e){
+      if(e.key === "Enter") document.getElementById('register-btn').click();
+    });
+    document.getElementById('reg-confirm').addEventListener("keydown", function(e){
+      if(e.key === "Enter") document.getElementById('register-btn').click();
+    });
+
+    // Quotes logic
+    const quotes = [
+      `"Talk is cheap. Show me the code." – Linus Torvalds`,
+      `"Games give you a chance to excel, and if you're playing in good company you don't even mind if you lose because you had the enjoyment of the company during the course of the game." – Gary Gygax`,
+      `"First, solve the problem. Then, write the code." – John Johnson`,
+      `"Coding is today's language of creativity." – Maria Klawe`,
+      `"Gaming is not a crime."`
+    ];
+    let qi = 0;
+    setInterval(() => {
+      if(document.getElementById('quote-box'))
+        document.getElementById('quote-box').innerHTML = quotes[qi = (qi+1)%quotes.length];
+    }, 4000);
+
+    // Hide main content initially
+    document.getElementById('main-title').style.display = 'none';
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('reset-progress-btn').style.display = 'none';
+    document.getElementById('xp-info').style.display = 'none';
+    document.getElementById('about-link').style.display = 'none';
+
+    // Enter button logic
+    document.getElementById('enter-btn').onclick = function() {
+      document.getElementById('enter-overlay').style.display = 'none';
+      document.getElementById('main-title').style.display = '';
+      document.getElementById('app').style.display = '';
+      document.getElementById('reset-progress-btn').style.display = '';
+      document.getElementById('xp-info').style.display = '';
+      document.getElementById('about-link').style.display = '';
+      renderCourseList();
+    };
+
+    // About logic
+    document.getElementById('about-link').onclick = function() {
+      document.getElementById('about-modal').style.display = 'flex';
+    };
+    document.getElementById('close-about').onclick = function() {
+      document.getElementById('about-modal').style.display = 'none';
+    };
+
+    // App logic (from File 1)
+    const courses = [
+      {
+        id: 1,
+        title: "HTML Basics",
+        description: "Learn the basics of HTML5 to build simple webpages.",
+        image: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg",
+        lessons: [
+          {
+            id: 101,
+            title: "Introduction to HTML",
+            content: `
+              <p>HTML stands for HyperText Markup Language. It is the standard markup language for creating Web pages.</p>
+              <img class='lesson-image' src='https://media.geeksforgeeks.org/wp-content/cdn-uploads/20190702134345/HTML.png' alt='HTML Logo' />`,
+            xp: 10
+          },
+          {
+            id: 102,
+            title: "HTML Tags",
+            content: `<p>Tags are the building blocks of HTML. Tags are enclosed in angle brackets &lt;&gt;.</p>
+                      <p>Examples: &lt;html&gt;, &lt;head&gt;, &lt;body&gt;, &lt;h1&gt; to &lt;h6&gt;, &lt;p&gt; etc.</p>`,
+            xp: 15
+          },
+          {
+            id: 103,
+            title: "HTML Elements and Attributes",
+            content: `<p>Elements are the components of an HTML document and attributes provide additional info.</p>
+                      <p>Example: &lt;a href="url"&gt;Link&lt;/a&gt; — 'href' is an attribute.</p>`,
+            xp: 15
+          },
+          {
+            id: 104,
+            title: "HTML Lists and Images",
+            content: `<p>HTML supports ordered &lt;ol&gt;, unordered &lt;ul&gt; lists, and images with &lt;img&gt; tag.</p>
+                      <img class='lesson-image' src='https://www.w3schools.com/html/img_lists.gif' alt='HTML lists' />`,
+            xp: 15
+          }
+        ],
+        quizzes: [
+          {
+            id: 1001,
+            question: "Which tag is used for the largest heading?",
+            options: ["<h6>", "<h1>", "<heading>", "<head>"],
+            correctAnswerIndex: 1
+          },
+          {
+            id: 1002,
+            question: "Which attribute is used to link a page to another URL?",
+            options: ["src", "href", "link", "ref"],
+            correctAnswerIndex: 1
+          },
+          {
+            id: 1003,
+            question: "Which tag inserts an image in HTML?",
+            options: ["<img>", "<image>", "<picture>", "<src>"],
+            correctAnswerIndex: 0
+          }
+        ]
+      },
+      {
+        id: 2,
+        title: "CSS Fundamentals",
+        description: "Style your webpages using CSS.",
+        image: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg",
+        lessons: [
+          {
+            id: 201,
+            title: "CSS Syntax",
+            content: `<p>CSS stands for Cascading Style Sheets and is used to style HTML elements.</p>
+                      <img class='lesson-image' src='https://cdn.tutsplus.com/net/uploads/legacy/772_css_intro/css_syntax.gif' alt='CSS Syntax' />`,
+            xp: 12
+          },
+          {
+            id: 202,
+            title: "CSS Selectors",
+            content: `<p>Selectors specify which elements the style applies to.</p>
+                      <p>Examples: element selectors, class selectors, id selectors.</p>`,
+            xp: 18
+          },
+          {
+            id: 203,
+            title: "CSS Box Model",
+            content: `<p>The box model describes the rectangular boxes generated for elements.</p>
+                      <img class='lesson-image' src='https://www.w3schools.com/css/boxmodel.gif' alt='CSS Box Model' />`,
+            xp: 15
+          },
+          {
+            id: 204,
+            title: "CSS Flexbox Basics",
+            content: `<p>Flexbox is a layout mode for arranging items in rows or columns efficiently.</p>`,
+            xp: 20
+          }
+        ],
+        quizzes: [
+          {
+            id: 2001,
+            question: "Which selector selects all paragraphs?",
+            options: ["p", ".p", "#p", "*p"],
+            correctAnswerIndex: 0
+          },
+          {
+            id: 2002,
+            question: "Which property controls the text size?",
+            options: ["font-style", "text-size", "font-size", "text-style"],
+            correctAnswerIndex: 2
+          },
+          {
+            id: 2003,
+            question: "What does 'padding' control in CSS box model?",
+            options: ["Space between border and content", "Space outside border", "Border thickness", "Content size"],
+            correctAnswerIndex: 0
+          }
+        ]
+      },
+      {
+        id: 3,
+        title: "Python Programming",
+        description: "Begin your journey into Python programming.",
+        image: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
+        lessons: [
+          {
+            id: 301,
+            title: "Python Syntax",
+            content: `<p>Python uses indentation instead of braces to define code blocks.</p>
+                      <img class='lesson-image' src='https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg' alt='Python Logo' />`,
+            xp: 20
+          },
+          {
+            id: 302,
+            title: "Variables in Python",
+            content: `<p>Variables store data values and do not need explicit declaration.</p>`,
+            xp: 25
+          },
+          {
+            id: 303,
+            title: "Data Types",
+            content: `<p>Common data types: int, float, string, bool, list, tuple, dictionary.</p>`,
+            xp: 20
+          },
+          {
+            id: 304,
+            title: "Control Flow - if/else",
+            content: `<p>Conditional statements let you execute code based on conditions.</p>`,
+            xp: 25
+          }
+        ],
+        quizzes: [
+          {
+            id: 3001,
+            question: "Which of the following is a valid variable name in Python?",
+            options: ["1variable", "variable_1", "variable-1", "variable 1"],
+            correctAnswerIndex: 1
+          },
+          {
+            id: 3002,
+            question: "What is the output of: print(2 ** 3)?",
+            options: ["6", "8", "9", "5"],
+            correctAnswerIndex: 1
+          },
+          {
+            id: 3003,
+            question: "Which keyword is used for a conditional statement?",
+            options: ["for", "while", "if", "def"],
+            correctAnswerIndex: 2
+          }
+        ]
+      }
+    ];
+
+    // Progress state
+    let progress = JSON.parse(localStorage.getItem('eduventuresProgress')) || {
+      xp: 0,
+      completedLessons: [],
+      completedCourses: [],
+      quizResults: {}
+    };
+
+    const appDiv = document.getElementById('app');
+
+    // XP Info
+    function renderXPInfo() {
+      let xpDiv = document.getElementById('xp-info');
+      const level = Math.floor(progress.xp / 50) + 1;
+      xpDiv.innerHTML = `<strong>Total XP:</strong> ${progress.xp} &nbsp; | &nbsp; <strong>Level:</strong> ${level}`;
+    }
+
+    // Course List
+    function renderCourseList() {
+      appDiv.innerHTML = '';
+      const courseListDiv = document.createElement('div');
+      courseListDiv.className = 'course-list';
+      courses.forEach(course => {
+        const card = document.createElement('div');
+        card.className = 'course-card';
+        card.innerHTML = `
+          <div class="logo-circle">
+            <img src="${course.image}" alt="${course.title}" />
+          </div>
+          <h2>${course.title}</h2>
+          <p>${course.description}</p>
+        `;
+        card.addEventListener('click', () => renderCourseDetails(course));
+        courseListDiv.appendChild(card);
+      });
+      appDiv.appendChild(courseListDiv);
+      renderXPInfo();
+    }
+
+    // Course Details
+    function renderCourseDetails(course) {
+      appDiv.innerHTML = '';
+      const backBtn = document.createElement('button');
+      backBtn.textContent = '← Back to Courses';
+      backBtn.className = 'back-button';
+      backBtn.onclick = renderCourseList;
+      appDiv.appendChild(backBtn);
+
+      const title = document.createElement('h2');
+      title.textContent = course.title;
+      appDiv.appendChild(title);
+
+      // Lessons
+      const lessonList = document.createElement('div');
+      lessonList.className = 'lesson-list';
+      course.lessons.forEach(lesson => {
+        const lessonCard = document.createElement('div');
+        lessonCard.className = 'lesson-card';
+        const isCompleted = progress.completedLessons.includes(lesson.id);
+        lessonCard.innerHTML = `
+          <h3>${lesson.title}</h3>
+          <div>${lesson.content || ''}</div>
+        `;
+        const btn = document.createElement('button');
+        btn.textContent = isCompleted ? 'Completed' : `Complete & Earn ${lesson.xp} XP`;
+        btn.disabled = isCompleted;
+        btn.onclick = () => {
+          if (!progress.completedLessons.includes(lesson.id)) {
+            progress.completedLessons.push(lesson.id);
+            progress.xp += lesson.xp;
+            saveProgress();
+            alert(`You earned ${lesson.xp} XP! Total XP: ${progress.xp}`);
+            renderCourseDetails(course);
+          }
+        };
+        lessonCard.appendChild(btn);
+        lessonList.appendChild(lessonCard);
+      });
+      appDiv.appendChild(lessonList);
+
+      // Quiz
+      const allLessonsCompleted = course.lessons.every(lesson => progress.completedLessons.includes(lesson.id));
+      if (allLessonsCompleted) {
+        const quizBtn = document.createElement('button');
+        quizBtn.textContent = 'Take Course Quiz';
+        quizBtn.className = 'certificate-button';
+        quizBtn.onclick = () => renderQuiz(course);
+        appDiv.appendChild(quizBtn);
+      }
+
+      // Certificate
+      const quizScore = progress.quizResults[course.id] || 0;
+      if (quizScore >= Math.floor(course.quizzes.length * 0.7)) {
+        if (!progress.completedCourses.includes(course.id)) {
+          progress.completedCourses.push(course.id);
+          saveProgress();
+          alert(`🎉 You passed the quiz and completed the ${course.title} course!`);
+        }
+        const certBtn = document.createElement('button');
+        certBtn.className = 'certificate-button';
+        certBtn.textContent = 'Download Certificate';
+        certBtn.onclick = () => downloadCertificate(course);
+        appDiv.appendChild(certBtn);
+      }
+      renderXPInfo();
+    }
+
+    // Quiz
+    function renderQuiz(course) {
+      appDiv.innerHTML = '';
+      const backBtn = document.createElement('button');
+      backBtn.textContent = '← Back to Course';
+      backBtn.className = 'back-button';
+      backBtn.onclick = () => renderCourseDetails(course);
+      appDiv.appendChild(backBtn);
+
+      let score = 0;
+      let current = 0;
+
+      function showQuestion() {
+        appDiv.innerHTML = '';
+        appDiv.appendChild(backBtn);
+        if (current >= course.quizzes.length) {
+          progress.quizResults[course.id] = score;
+          saveProgress();
+          appDiv.innerHTML += `<div class="quiz-card"><h3>Quiz Complete!</h3>
+            <p>Your Score: ${score} / ${course.quizzes.length}</p>
+            <button class="back-button" onclick="renderCourseDetails(courses.find(c=>c.id==${course.id}))">Back to Course</button>
+          </div>`;
+          renderXPInfo();
+          return;
+        }
+        const quiz = course.quizzes[current];
+        const quizDiv = document.createElement('div');
+        quizDiv.className = 'quiz-card';
+        quizDiv.innerHTML = `<div class="quiz-question">${quiz.question}</div>`;
+        quiz.options.forEach((opt, i) => {
+          const btn = document.createElement('button');
+          btn.className = 'quiz-option-btn';
+          btn.innerHTML = opt;
+          btn.onclick = () => {
+            if (i === quiz.correctAnswerIndex) {
+              btn.classList.add('correct');
+              score++;
+            } else {
+              btn.classList.add('incorrect');
+            }
+            setTimeout(() => {
+              current++;
+              showQuestion();
+            }, 700);
+          };
+          quizDiv.appendChild(btn);
+        });
+        appDiv.appendChild(quizDiv);
+        renderXPInfo();
+      }
+      showQuestion();
+    }
+
+    // Certificate
+    function downloadCertificate(course) {
+      const user = loggedInUser || "Learner";
+      const certText = `Certificate of Completion\n\nThis certifies that ${user} has successfully completed the "${course.title}" course on Eduventures Neon.`;
+      const blob = new Blob([certText], { type: "text/plain" });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${course.title.replace(/\s+/g, '_')}_certificate.txt`;
+      link.click();
+    }
+
+    // Save Progress
+    function saveProgress() {
+      localStorage.setItem('eduventuresProgress', JSON.stringify(progress));
+      renderXPInfo();
+    }
+
+    // Reset Progress
+    document.getElementById('reset-progress-btn').onclick = function() {
+      if (confirm('Are you sure you want to reset all progress?')) {
+        localStorage.removeItem('eduventuresProgress');
+        progress = { xp: 0, completedLessons: [], completedCourses: [], quizResults: {} };
+        renderCourseList();
+        renderXPInfo();
+      }
+    };
+  </script>
+</body>
+</html>
+
+
+
+
+
