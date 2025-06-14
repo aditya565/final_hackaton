@@ -6,31 +6,36 @@ A web platform designed to transform traditional learning using XP systems, quiz
 🧠 About the Project
 Game of Learning is a gamified education platform built during a 24-hour hackathon to make beginner learning more interactive, motivating, and visually engaging. Users earn XP, level up, unlock badges, and compete on leaderboards—all while learning core concepts through lessons and games.
 
-✨ Features
+    ✨ Features
 🎯 Interactive Dashboard – Track XP, levels, badges, and lesson progress.
 📚 Modular Learning – Unlock lessons, earn XP, and view detailed progress.
 🏆 Leaderboard – Compete with peers in weekly and global rankings.
 🎮 Gamified Activities – Includes trivia, memory match, drag-and-drop logic puzzles, and more!
 🔐 User Authentication – Secure login with JWT.
 🌐 Deployment Ready – Hosted on Vercel (frontend), Render/Railway (backend).
-👥 Team & Responsibilities
+        
+    👥 Team & Responsibilities
+
 Member	Role	Contribution
 Kartik	UI/Frontend Developer	React.js + Tailwind UI for Landing Page, Dashboard, Modules, Lesson View, Leaderboard
 Aditya	Backend Developer	Node.js + Express + MongoDB API, JWT Auth, Lesson/XP Progress, Leaderboard System
 aniket	Gamification & DB	XP logic, level thresholds, badge system, DB schema for achievements & lesson tracking
 kartik	Deployment & Testing Lead	End-to-end testing (Postman/Cypress), integration with Axios, deployment using Vercel/Render, API documentation
-🧩 Tech Stack
+
+     🧩 Tech Stack
+
 Frontend: React.js, Tailwind CSS, Framer Motion, Axios, React DnD
 Backend: Node.js, Express.js, MongoDB, JWT
 Testing: Postman, Cypress
 Games: React, React Spring, Phaser.js (for adventure mode)
 Deployment: Vercel, Railway, Render
 🚀 Getting Started
-⚙️ Functional Overview
+  
+   ⚙️ Functional Overview
 
 The Game of Learning platform offers a wide array of interactive and gamified educational features designed to make learning fun, adaptive, and rewarding.
 
-  🔍 User-Facing Properties
+    🔍 User-Facing Properties
 
 Onboarding & Authentication
 Users can register/login securely via JWT.
@@ -54,7 +59,7 @@ XP levels and current stage
 Badges earned
 Lessons completed vs. total
 
-  📸📸screen shots of the working interface
+    📸📸screen shots of the working interface
 
 ![WhatsApp Image 2025-06-14 at 06 45 21_84227292](https://github.com/user-attachments/assets/45e0b85c-360f-4059-b6c4-4d036ef94ec0)
 
@@ -63,7 +68,7 @@ Lessons completed vs. total
 
 ![WhatsApp Image 2025-06-14 at 06 46 12_65aa057c](https://github.com/user-attachments/assets/0f36356a-84e6-4045-9555-594c694743e5)
 
- 🟩  Step by step guide for navigating the application
+    🟩  Step by step guide for navigating the application
 
 1.	Open the website through the host(currently local host)
 2.	Register if you want to create an account or login if already registered
