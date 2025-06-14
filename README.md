@@ -30,7 +30,7 @@ Deployment: Vercel, Railway, Render
 
 The Game of Learning platform offers a wide array of interactive and gamified educational features designed to make learning fun, adaptive, and rewarding.
 
-🔍 User-Facing Properties
+  🔍 User-Facing Properties
 
 Onboarding & Authentication
 Users can register/login securely via JWT.
@@ -54,7 +54,7 @@ XP levels and current stage
 Badges earned
 Lessons completed vs. total
 
-📸📸screen shots of the working interface
+  📸📸screen shots of the working interface
 
 ![WhatsApp Image 2025-06-14 at 06 45 21_84227292](https://github.com/user-attachments/assets/45e0b85c-360f-4059-b6c4-4d036ef94ec0)
 
@@ -63,4 +63,15 @@ Lessons completed vs. total
 
 ![WhatsApp Image 2025-06-14 at 06 46 12_65aa057c](https://github.com/user-attachments/assets/0f36356a-84e6-4045-9555-594c694743e5)
 
+ 🟩  Step by step guide for navigating the application
+
+1.	Open the website through the host(currently local host)
+2.	Register if you want to create an account or login if already registered
+3.	Enter the user interface part with a gamified motivational quote
+4.	There are certain programming languages isted,select one which you are interested in
+5.	Complete the course by watching  lectures ,playing games or audio files
+6.	Take a quiz game to learn to apply your learnings
+7.	You will find a download certificate there download it with the authorized signature
+
+   hurray! you have successfully navigated your edu venture🤩
 
